@@ -191,7 +191,7 @@ export default {
         <v-btn
           density="plain"
           icon="mdi-github"
-          href="https://github.com/Cross-Lab-Project/edrys-Lite/"
+          href="https://github.com/edrys-labs/edrys-Lite/"
           target="_"
           class="mx-2"
         >
@@ -200,20 +200,20 @@ export default {
         <v-btn
           density="plain"
           icon="mdi-information"
-          href="https://github.com/edrys-org/edrys/blob/main/docs/Modules.md"
+          href="https://github.com/edrys-labs/documentation"
           target="_"
           class="mx-2"
         >
         </v-btn>
 
-        <!--v-btn
+        <v-btn
           density="plain"
-          icon="mdi-plus-circle"
-          href="https://github.com/Cross-Lab-Project/edrys-Lite/"
+          icon="mdi-share-circle"
+          href="https://github.com/topics/edrys-classroom"
           target="_"
           class="mx-2"
         >
-        </v-btn-->
+        </v-btn>
       </v-row>
     </v-footer>
   </v-app>
