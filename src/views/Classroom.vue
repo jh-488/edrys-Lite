@@ -415,27 +415,29 @@ export default {
           </v-card>
         </v-overlay>
 
-        <v-list density="compact" nav>
-          <v-list-item>
-            <v-list-item-title>
-              {{ configuration?.data?.name || "" }}
-            </v-list-item-title>
+        <template v-slot:prepend>
+          <v-list density="compact" nav>
+            <v-list-item>
+              <v-list-item-title>
+                {{ configuration?.data?.name || "" }}
+              </v-list-item-title>
 
-            <v-list-item-subtitle>
-              online users {{ Object.keys(liveClassProxy?.users || {}).length }}
-            </v-list-item-subtitle>
+              <v-list-item-subtitle>
+                online users {{ Object.keys(liveClassProxy?.users || {}).length }}
+              </v-list-item-subtitle>
 
-            <template v-slot:append>
-              <v-btn
-                color="grey"
-                icon="mdi-cog"
-                @click="showSettings = !showSettings"
-                variant="text"
-                v-if="!isStation && isOwner"
-              ></v-btn>
-            </template>
-          </v-list-item>
-        </v-list>
+              <template v-slot:append>
+                <v-btn
+                  color="grey"
+                  icon="mdi-cog"
+                  @click="showSettings = !showSettings"
+                  variant="text"
+                  v-if="!isStation && isOwner"
+                ></v-btn>
+              </template>
+            </v-list-item>
+          </v-list>
+        </template>
         <v-divider></v-divider>
 
         <v-list nav v-for="(room, name, i) in getRooms()" :key="i" density="compact">
