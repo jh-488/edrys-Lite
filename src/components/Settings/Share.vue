@@ -50,7 +50,7 @@
   </v-row>
 
   <v-divider class="pb-2"></v-divider>
-  <v-btn href="https://github.com/topics/edrys-lab" target="_blank">
+  <v-btn href="https://github.com/topics/edrys-classroom" target="_blank">
     <v-icon left> mdi-github </v-icon>
     Explore on GitHub
   </v-btn>
