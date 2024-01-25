@@ -153,7 +153,7 @@ export default class State {
         .filter((e) => e.match(/Room/))
         .map((e) => e.split(' ')[1])
         .map((e) => parseInt(e))
-        .sort()
+        .sort((a, b) => a - b)
 
       let newRoomID = 1
       for (const id of roomIDs) {
@@ -162,6 +162,7 @@ export default class State {
         }
         newRoomID++
       }
+
       return this.addRoom(true, 'Room ' + newRoomID)
     }
   }
