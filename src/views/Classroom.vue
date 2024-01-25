@@ -1,6 +1,6 @@
 <script lang="ts">
 import Settings from "../components/Settings.vue";
-
+import Chat from "../components/Chat"
 import Modules from "../components/Modules.vue";
 
 import { Database, DatabaseItem } from "../ts/Database";
@@ -69,6 +69,11 @@ export default {
       stationName,
 
       componentKey: 0,
+
+      chat: {
+        open: false,
+        messages: [],
+      },
     };
   },
   watch: {
@@ -219,6 +224,10 @@ export default {
       return users;
     },
 
+    permanent() {
+      return window.innerWidth > 800;
+    },
+
     gotoRoom(name: string) {
       this.communication?.gotoRoom(name);
     },
@@ -238,6 +247,7 @@ export default {
   },
 
   components: {
+    Chat,
     Settings,
     Modules,
   },
@@ -348,36 +358,38 @@ export default {
           </v-app-bar-title>
         </template>
 
-        <template v-slot:append>
-          <v-menu>
-            <template v-slot:activator="{ props }">
-              <v-btn v-bind="props" icon="mdi-dots-vertical"> </v-btn>
-            </template>
+        <v-spacer></v-spacer>
 
-            <v-list>
-              <v-list-item>
-                <v-list-item-title> User ID: </v-list-item-title>
-                <v-list-item-subtitle>
-                  {{ getPeerID() }}
-                  <v-btn
-                    icon="mdi-content-copy"
-                    size="small"
-                    variant="flat"
-                    @click="copyPeerID()"
-                  >
-                  </v-btn>
-                </v-list-item-subtitle>
-              </v-list-item>
+        <v-btn icon="mdi-forum" @click="chat.open = !chat.open"></v-btn>
 
-              <v-list-item>
-                <v-list-item-title> User Role: </v-list-item-title>
-                <v-list-item-subtitle>
-                  {{ getRole() }}
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </template>
+        <v-menu>
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" icon="mdi-dots-vertical"> </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item>
+              <v-list-item-title> User ID: </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ getPeerID() }}
+                <v-btn
+                  icon="mdi-content-copy"
+                  size="small"
+                  variant="flat"
+                  @click="copyPeerID()"
+                >
+                </v-btn>
+              </v-list-item-subtitle>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title> User Role: </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ getRole() }}
+              </v-list-item-subtitle>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </v-app-bar>
 
       <v-navigation-drawer temporary v-model="showSideMenu">
@@ -482,6 +494,16 @@ export default {
             </v-btn>
           </div>
         </template>
+      </v-navigation-drawer>
+      <v-navigation-drawer
+        :width="400"
+        :permanent="permanent()"
+        v-model="chat.open"
+        location="right"
+      >
+        <Chat :messages="chat.messages">
+          
+        </Chat>
       </v-navigation-drawer>
       <v-main style="overflow-y: scroll">
         <v-col>
