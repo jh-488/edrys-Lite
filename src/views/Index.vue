@@ -1,7 +1,13 @@
 <script lang="ts">
 import DateFormat from "date-format-simple";
 import { Database, DatabaseItem } from "../ts/Database";
-import { infoHash, getPeerID, clone, removeKeysStartingWithSecret } from "../ts/Utils";
+import {
+  infoHash,
+  getPeerID,
+  clone,
+  removeKeysStartingWithSecret,
+  copyToClipboard,
+} from "../ts/Utils";
 
 export default {
   data() {
@@ -20,6 +26,10 @@ export default {
   },
 
   methods: {
+    copyPeerID() {
+      copyToClipboard(this.peerID);
+    },
+
     deleteClass(id: string) {
       this.database.drop(id);
     },
@@ -86,7 +96,31 @@ export default {
 
 <template>
   <v-app>
-    <v-app-bar color="surface-variant" title="edrys-lite"> </v-app-bar>
+    <v-app-bar color="surface-variant" title="edrys-lite">
+      <template v-slot:append>
+        <v-menu>
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" icon="mdi-dots-vertical"> </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item>
+              <v-list-item-title> User ID: </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ peerID }}
+                <v-btn
+                  icon="mdi-content-copy"
+                  size="small"
+                  variant="flat"
+                  @click="copyPeerID()"
+                >
+                </v-btn>
+              </v-list-item-subtitle>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </template>
+    </v-app-bar>
 
     <v-main class="d-flex">
       <v-container fluid class="align-start">
