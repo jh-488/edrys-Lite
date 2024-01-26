@@ -7,6 +7,7 @@ const HEARTBEAT_DEATH = 15 * 60 * 10000
 
 const LOBBY = 'Lobby'
 const STATION = 'Station'
+const MAX_MESSAGES = 100
 
 type Message = {
   id: number
@@ -144,7 +145,9 @@ export default class State {
       msg,
     }
 
-    this.chat.hash = objectHash(this.chat.messages)
+    if (!this.truncateMessages()) {
+      this.chat.hash = objectHash(this.chat.messages)
+    }
 
     this.update({ chat: true })
   }
@@ -277,11 +280,14 @@ export default class State {
 
     if (this.chat.hash !== doc.chat.hash) {
       updateChat = true
-      this.chat = doc.chat
+      this.chat.truncated = this.chat.truncated || doc.chat.truncated
 
       if (Object.keys(doc.chat.messages).length !== 0) {
         this.chat.messages = { ...doc.chat.messages, ...this.chat.messages }
-        this.chat.hash = objectHash(this.chat.messages)
+
+        if (!this.truncateMessages()) {
+          this.chat.hash = objectHash(this.chat.messages)
+        }
 
         if (this.chat.hash === doc.chat.hash) {
           updateChat = false
@@ -365,6 +371,30 @@ export default class State {
     }
     */
     this.update({ room: true })
+  }
+
+  truncateMessages() {
+    const ids = Object.keys(this.chat.messages).sort()
+
+    if (ids.length <= MAX_MESSAGES) {
+      return false
+    }
+
+    let toDelete = ids.length - MAX_MESSAGES
+
+    for (const id of ids) {
+      delete this.chat.messages[id]
+      toDelete--
+
+      if (toDelete <= 0) {
+        break
+      }
+    }
+
+    this.chat.hash = objectHash(this.chat.messages)
+    this.chat.truncated = true
+
+    return true
   }
 
   on(
