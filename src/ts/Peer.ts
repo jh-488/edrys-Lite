@@ -242,7 +242,7 @@ export default class Peer {
             try {
               this.p2pt.send(this.peers[id].peer, msg)
             } catch (e) {
-              //console.warn(e.message)
+              console.warn('room', e.message)
               //delete this.peers[id]
             }
           }
@@ -256,7 +256,7 @@ export default class Peer {
         try {
           this.p2pt.send(this.peers[id].peer, msg)
         } catch (e) {
-          console.warn(e.message)
+          console.warn('message', e.message)
           delete this.peers[id]
         }
       }
@@ -290,7 +290,12 @@ export default class Peer {
     }
 
     if (peerID && this.peers[peerID]) {
-      this.p2pt.send(this.peers[peerID].peer, message)
+      try {
+        this.p2pt.send(this.peers[peerID].peer, message)
+      } catch (e) {
+        console.warn('publishSetup', e.message)
+        // delete this.peers[peerID]
+      }
     } else {
       this.broadcast(message)
     }
