@@ -225,10 +225,6 @@ export default {
       return users;
     },
 
-    permanent() {
-      return window.innerWidth > 800;
-    },
-
     gotoRoom(name: string) {
       this.communication?.gotoRoom(name);
     },
@@ -412,14 +408,9 @@ export default {
           </div>
         </template>
       </v-navigation-drawer>
-      <v-navigation-drawer
-        :width="400"
-        :permanent="permanent()"
-        v-model="chat.open"
-        location="right"
-      >
-        <Chat :messages="chat.messages"> </Chat>
-      </v-navigation-drawer>
+
+      <Chat :show="chat.open" :messages="chat.messages"> </Chat>
+
       <v-main style="overflow-y: scroll">
         <v-col>
           <Modules
