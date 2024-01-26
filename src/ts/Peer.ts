@@ -140,7 +140,10 @@ export default class Peer {
     this.publishSetup()
   }
 
-  update(event: 'setup' | 'room' | 'message' | 'connected', message?: any) {
+  update(
+    event: 'setup' | 'room' | 'message' | 'connected' | 'chat',
+    message?: any
+  ) {
     const callback = this.callback[event]
 
     switch (event) {
@@ -166,6 +169,16 @@ export default class Peer {
       case 'room': {
         if (callback) {
           callback(this.state.toJSON())
+          this.callbackUpdate[event] = false
+        } else {
+          this.callbackUpdate[event] = true
+        }
+        break
+      }
+
+      case 'chat': {
+        if (callback) {
+          callback(this.state.getChat())
           this.callbackUpdate[event] = false
         } else {
           this.callbackUpdate[event] = true
@@ -215,6 +228,7 @@ export default class Peer {
       return
     }
 
+    // @ts-ignore
     msg.id = this.peerID
 
     if (msg.topic === 'room') {
@@ -290,31 +304,37 @@ export default class Peer {
     this.state.gotoRoom(room)
   }
 
+  sendMessage(message: string) {
+    this.state.addMessage(message)
+  }
+
   join() {
     this.timestamp.join = Date.now()
 
     this.state.init('student', this.data.meta.defaultNumberOfRooms)
 
     const self = this
-    this.state.on('update', (full: boolean) => {
-      if (full) {
-        this.updateClassroom()
+    this.state.on('update', (config: { room?: boolean; chat?: boolean }) => {
+      if (config.room || config.chat) {
+        this.updateClassroom(!!config.chat)
       }
 
-      this.update('room')
+      if (config.room !== undefined) this.update('room')
+
+      if (config.chat !== undefined) this.update('chat')
     })
 
     setTimeout(() => {
-      self.updateClassroom()
+      self.updateClassroom(true)
     }, 1000)
 
     return this.state.toJSON()
   }
 
-  updateClassroom() {
+  updateClassroom(chat: boolean) {
     this.broadcast({
       topic: 'room-update',
-      data: this.state.encode(),
+      data: this.state.encode(chat),
     })
   }
 }

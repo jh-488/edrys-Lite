@@ -170,6 +170,10 @@ export default {
         self.liveClassProxy = config;
       });
 
+      this.communication.on("chat", (messages: any) => {
+        self.chat.messages = messages;
+      });
+
       self.liveClassProxy = this.communication.join();
 
       this.communication.on("connected", (state: boolean) => {
@@ -240,6 +244,10 @@ export default {
 
     updateClass(config: any) {
       this.data = clone(config.data);
+    },
+
+    sendMessage(message: string) {
+      this.communication.sendMessage(message);
     },
   },
 
@@ -409,7 +417,8 @@ export default {
         </template>
       </v-navigation-drawer>
 
-      <Chat :show="chat.open" :messages="chat.messages"> </Chat>
+      <Chat :show="chat.open" :messages="chat.messages" @sendMessage="sendMessage">
+      </Chat>
 
       <v-main style="overflow-y: scroll">
         <v-col>

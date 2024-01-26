@@ -1,4 +1,5 @@
-import { clone, deepEqual } from './Utils'
+import { clone, deepEqual, getShortPeerID } from './Utils'
+import * as objectHash from 'object-hash'
 
 const HEARTBEAT_INTERVAL = 10 * 1000
 const HEARTBEAT_TIMEOUT = 3 * 60 * 1000
@@ -7,9 +8,21 @@ const HEARTBEAT_DEATH = 15 * 60 * 10000
 const LOBBY = 'Lobby'
 const STATION = 'Station'
 
+type Message = {
+  id: number
+  msg: string
+  user: string
+}
+
 export default class State {
   private doc: any = { users: {}, rooms: {} }
   private backupDoc: any = { users: {}, rooms: {} }
+
+  private chat: any = {
+    hash: objectHash({}),
+    messages: {},
+    truncated: false,
+  }
 
   private userID: string = ''
   private heartbeatID?: number
@@ -32,7 +45,7 @@ export default class State {
     tombstone: false,
   }
 
-  private callback?: (full: boolean) => void
+  private callback?: (config: { room?: boolean; chat?: boolean }) => void
 
   constructor(userID: string) {
     this.userID = userID
@@ -108,6 +121,34 @@ export default class State {
     return newDoc
   }
 
+  getChat(): Message[] {
+    const messages: Message[] = []
+
+    const keys = Object.keys(this.chat.messages).sort()
+
+    for (const key of keys) {
+      let { user, msg } = this.chat.messages[key]
+
+      messages.push({ id: parseInt(key), user, msg })
+    }
+
+    return messages
+  }
+
+  addMessage(msg: string) {
+    const timestamp = Date.now()
+    const user = getShortPeerID(this.userID)
+
+    this.chat.messages[timestamp] = {
+      user,
+      msg,
+    }
+
+    this.chat.hash = objectHash(this.chat.messages)
+
+    this.update({ chat: true })
+  }
+
   filterTombstones(obj: any) {
     const newObj: any = {}
 
@@ -147,7 +188,7 @@ export default class State {
         tombstone: false,
       }
 
-      this.update(withTimestamp)
+      this.update({ room: withTimestamp })
     } else {
       const roomIDs: number[] = Object.keys(this.doc.rooms)
         .filter((e) => e.match(/Room/))
@@ -179,7 +220,7 @@ export default class State {
 
     this.doc.users[this.userID] = this.userSettings
 
-    this.update(true)
+    this.update({ room: true })
   }
 
   isRoomAlive(roomID: string) {
@@ -190,13 +231,21 @@ export default class State {
     return this.doc.users[userID] && !this.doc.users[userID].tombstone
   }
 
-  encode() {
-    return clone(this.doc)
+  encode(withChat: boolean) {
+    const rooms = clone(this.doc.rooms)
+    const users = clone(this.doc.users)
+    const chat = {
+      hash: this.chat.hash,
+      messages: withChat ? clone(this.chat.messages) : {},
+      truncated: this.chat.truncated,
+    }
+
+    return { rooms, users, chat }
   }
 
-  update(full: boolean = true) {
+  update(config: { room?: boolean; chat?: boolean }) {
     if (this.callback) {
-      this.callback(full)
+      this.callback(config)
     }
   }
 
@@ -223,9 +272,24 @@ export default class State {
     this.doc.rooms = clone(rooms)
     this.doc.users = clone(users)
 
-    const fullUpdate = !deepEqual(this.toJSON(doc), this.toJSON(this.doc))
+    let updateRoom = !deepEqual(this.toJSON(doc), this.toJSON(this.doc))
+    let updateChat
 
-    this.update(fullUpdate)
+    if (this.chat.hash !== doc.chat.hash) {
+      updateChat = true
+      this.chat = doc.chat
+
+      if (Object.keys(doc.chat.messages).length !== 0) {
+        this.chat.messages = { ...doc.chat.messages, ...this.chat.messages }
+        this.chat.hash = objectHash(this.chat.messages)
+
+        if (this.chat.hash === doc.chat.hash) {
+          updateChat = false
+        }
+      }
+    }
+
+    this.update({ room: updateRoom, chat: updateChat })
   }
 
   removeUser(userID: string, performUpdate: boolean = false) {
@@ -237,7 +301,7 @@ export default class State {
     }
 
     if (performUpdate) {
-      this.update(true)
+      this.update({ room: true })
     }
   }
 
@@ -300,10 +364,13 @@ export default class State {
       }
     }
     */
-    this.update(true)
+    this.update({ room: true })
   }
 
-  on(event: 'update', callback: (full: boolean) => void) {
+  on(
+    event: 'update',
+    callback: (config: { room?: boolean; chat?: boolean }) => void
+  ) {
     this.callback = callback
   }
 }

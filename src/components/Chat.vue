@@ -4,24 +4,22 @@ import { copyToClipboard } from "../ts/Utils";
 export default {
   name: "Chat",
   props: ["show", "messages"],
+  emits: ["sendMessage"],
 
   data() {
     return {
       message: "",
       open: this.show,
-      history: [
-        {
-          id: Date.now(),
-          msg: "löajsdl asöldjf asfdöjalsdfjafjoiweösjdf fj saljfdaosfas fljfd afsjöaj",
-          name: "Horst Meier",
-        },
-      ],
+      history: this.messages,
     };
   },
 
   watch: {
     show() {
       this.open = this.show;
+    },
+    messages() {
+      this.history = this.messages;
     },
   },
 
@@ -32,14 +30,16 @@ export default {
 
     send() {
       if (this.message.trim() !== "") {
-        this.history.push({ id: Date.now(), msg: this.message, name: "sadfasfdasfd" });
+        //this.history.push({ id: Date.now(), msg: this.message, name: "sadfasfdasfd" });
+
+        this.$emit("sendMessage", this.message.trim());
         this.message = "";
       }
     },
 
-    toDate(timestamp: string): string {
+    toDate(timestamp: number): string {
       try {
-        const date = new Date(parseInt(timestamp));
+        const date = new Date(timestamp);
         return date.toLocaleString();
       } catch (e) {}
 
@@ -72,7 +72,7 @@ export default {
                 class="text-end text-decoration-overline"
                 style="font-size: 10px; color: gray"
               >
-                {{ toDate(msg.id) }} / {{ msg.name }}
+                {{ toDate(msg.id) }} / {{ msg.user }}
               </p>
             </v-card-text>
           </v-card>
