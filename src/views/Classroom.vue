@@ -75,6 +75,7 @@ export default {
         open: false,
         messages: [],
         truncated: false,
+        new: false,
       },
     };
   },
@@ -174,6 +175,10 @@ export default {
       this.communication.on("chat", (chat: { messages: any; truncated: boolean }) => {
         self.chat.messages = chat.messages;
         self.chat.truncated = chat.truncated;
+
+        if (!self.chat.open) {
+          self.chat.new = true;
+        }
       });
 
       self.liveClassProxy = this.communication.join();
@@ -283,7 +288,18 @@ export default {
 
         <v-spacer></v-spacer>
 
-        <v-btn icon="mdi-forum" @click="chat.open = !chat.open"></v-btn>
+        <v-btn
+          icon
+          @click="
+            chat.open = !chat.open;
+            chat.new = false;
+          "
+        >
+          <v-badge dot color="red" v-if="chat.new">
+            <v-icon icon="mdi-forum"></v-icon>
+          </v-badge>
+          <v-icon icon="mdi-forum" v-else></v-icon>
+        </v-btn>
 
         <v-menu>
           <template v-slot:activator="{ props }">
