@@ -48,7 +48,7 @@ export default {
 
   methods: {
     permanent() {
-      return window.innerWidth > 800;
+      return window.innerWidth > 1000 + 400;
     },
 
     send() {
@@ -108,7 +108,8 @@ export default {
     </v-container>
     <template v-slot:append>
       <div class="pa-2">
-        <v-textarea counter no-resize rows="4" v-model="message"> </v-textarea>
+        <v-textarea counter no-resize rows="4" v-model="message" maxlength="2000">
+        </v-textarea>
 
         <v-btn
           append-icon="mdi-send-outline"
