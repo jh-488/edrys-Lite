@@ -1,5 +1,7 @@
 <script lang="ts">
-import { copyToClipboard } from "../ts/Utils";
+import markdownit from "markdown-it";
+import hljs from "highlight.js";
+import "../../node_modules/highlight.js/scss/atom-one-dark.scss";
 
 export default {
   name: "Chat",
@@ -7,10 +9,31 @@ export default {
   emits: ["sendMessage"],
 
   data() {
+    const md = markdownit({
+      html: true,
+      linkify: true,
+      typographer: true,
+      highlight: function (str, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          try {
+            return (
+              '<pre><code class="hljs">' +
+              hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
+              "</code></pre>"
+            );
+          } catch (__) {}
+        }
+
+        return '<pre><code class="hljs">' + md.utils.escapeHtml(str) + "</code></pre>";
+      },
+    });
+
     return {
       message: "",
       open: this.show,
       history: this.messages,
+
+      md,
     };
   },
 
@@ -35,6 +58,10 @@ export default {
         this.$emit("sendMessage", this.message.trim());
         this.message = "";
       }
+    },
+
+    render(key: string, code: string) {
+      return this.md.render(code);
     },
 
     toDate(timestamp: number): string {
@@ -66,11 +93,11 @@ export default {
         >
           <v-card variant="elevated" class="mx-auto">
             <v-card-text style="padding-bottom: 3px">
-              <p>{{ msg.msg }}</p>
+              <div class="markdown" v-html="render(msg.id, msg.msg)"></div>
 
               <p
                 class="text-end text-decoration-overline"
-                style="font-size: 10px; color: gray"
+                style="font-size: 10px; color: gray; margin-top: -10px"
               >
                 {{ toDate(msg.id) }} / {{ msg.user }}
               </p>
@@ -96,3 +123,21 @@ export default {
     </template>
   </v-navigation-drawer>
 </template>
+
+<style>
+ul li {
+  margin-left: 1em !important;
+}
+
+ol li {
+  margin-left: 1.2em !important;
+}
+
+.markdown > * {
+  margin-bottom: 12px;
+}
+
+.markdown {
+  overflow: auto;
+}
+</style>
