@@ -1,6 +1,7 @@
 <script lang="ts">
 import Settings from "../components/Settings.vue";
-import Chat from "../components/Chat"
+import Chat from "../components/Chat";
+import Checks from "../components/Checks";
 import Modules from "../components/Modules.vue";
 
 import { Database, DatabaseItem } from "../ts/Database";
@@ -248,6 +249,7 @@ export default {
 
   components: {
     Chat,
+    Checks,
     Settings,
     Modules,
   },
@@ -255,93 +257,8 @@ export default {
 </script>
 
 <template>
-  <v-overlay
-    v-model="state"
-    v-if="
-      states.connectedToNetwork === null ||
-      states.webRTCSupport === null ||
-      states.receivedConfiguration === null
-    "
-    style="background-color: rgba(0, 0, 0, 0.6); z-index: 1000"
-  >
-    <v-container>
-      <v-row
-        justify="center"
-        align="center"
-        style="color: white; width: 100vw; height: 70vh"
-      >
-        <v-col cols="12" sm="12" md="4" justify="center" align="center">
-          <v-progress-circular
-            indeterminate
-            :size="88"
-            :width="7"
-            justify="center"
-            align="center"
-          ></v-progress-circular>
+  <Checks :states="states" />
 
-          <div>
-            WebRTC-support
-
-            <v-btn
-              class="ma-5"
-              size="x-small"
-              color="success"
-              icon="mdi-check"
-              v-if="states.webRTCSupport === true"
-            ></v-btn>
-
-            <v-btn
-              class="ma-5"
-              size="x-small"
-              color="error"
-              icon="mdi-close"
-              v-if="states.webRTCSupport === false"
-            ></v-btn>
-          </div>
-
-          <div>
-            Configuration loaded
-
-            <v-btn
-              class="ma-5"
-              size="x-small"
-              color="success"
-              icon="mdi-check"
-              v-if="states.receivedConfiguration === true"
-            ></v-btn>
-
-            <v-btn
-              class="ma-5"
-              size="x-small"
-              color="error"
-              icon="mdi-close"
-              v-if="states.receivedConfiguration === false"
-            ></v-btn>
-          </div>
-
-          <div>
-            Connected to peer 2 peer network
-
-            <v-btn
-              class="ma-5"
-              size="x-small"
-              color="success"
-              icon="mdi-check"
-              v-if="states.connectedToNetwork === true"
-            ></v-btn>
-
-            <v-btn
-              class="ma-5"
-              size="x-small"
-              color="error"
-              icon="mdi-close"
-              v-if="states.connectedToNetwork === false"
-            ></v-btn>
-          </div>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-overlay>
   <v-app>
     <v-layout>
       <v-app-bar color="surface-variant">
@@ -501,9 +418,7 @@ export default {
         v-model="chat.open"
         location="right"
       >
-        <Chat :messages="chat.messages">
-          
-        </Chat>
+        <Chat :messages="chat.messages"> </Chat>
       </v-navigation-drawer>
       <v-main style="overflow-y: scroll">
         <v-col>
