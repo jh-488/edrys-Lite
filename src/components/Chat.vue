@@ -118,7 +118,14 @@ export default {
     </v-container>
     <template v-slot:append>
       <div class="pa-2">
-        <v-textarea counter no-resize rows="4" v-model="message" maxlength="2000">
+        <v-textarea
+          counter
+          no-resize
+          rows="4"
+          v-model="message"
+          maxlength="2000"
+          @keyup.ctrl.enter="send()"
+        >
         </v-textarea>
 
         <v-btn
