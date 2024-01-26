@@ -74,6 +74,7 @@ export default {
       chat: {
         open: false,
         messages: [],
+        truncated: false,
       },
     };
   },
@@ -170,8 +171,9 @@ export default {
         self.liveClassProxy = config;
       });
 
-      this.communication.on("chat", (messages: any) => {
-        self.chat.messages = messages;
+      this.communication.on("chat", (chat: { messages: any; truncated: boolean }) => {
+        self.chat.messages = chat.messages;
+        self.chat.truncated = chat.truncated;
       });
 
       self.liveClassProxy = this.communication.join();
@@ -417,7 +419,12 @@ export default {
         </template>
       </v-navigation-drawer>
 
-      <Chat :show="chat.open" :messages="chat.messages" @sendMessage="sendMessage">
+      <Chat
+        :show="chat.open"
+        :messages="chat.messages"
+        :truncated="chat.truncated"
+        @sendMessage="sendMessage"
+      >
       </Chat>
 
       <v-main style="overflow-y: scroll">

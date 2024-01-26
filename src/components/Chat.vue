@@ -5,7 +5,7 @@ import "../../node_modules/highlight.js/scss/atom-one-dark.scss";
 
 export default {
   name: "Chat",
-  props: ["show", "messages"],
+  props: ["show", "messages", "truncated"],
   emits: ["sendMessage"],
 
   data() {
@@ -32,7 +32,7 @@ export default {
       message: "",
       open: this.show,
       history: this.messages,
-
+      deletedMessages: this.truncated,
       md,
     };
   },
@@ -43,6 +43,9 @@ export default {
     },
     messages() {
       this.history = this.messages;
+    },
+    truncated() {
+      this.deletedMessages = this.truncated;
     },
   },
 
@@ -85,6 +88,13 @@ export default {
   >
     <v-container>
       <v-row align="center" justify="center">
+        <v-col
+          cols="12"
+          style="padding: 15px 0.5rem 15px 0.5rem"
+          v-if="this.deletedMessages"
+        >
+          <div>previous messages have been deleted ...</div>
+        </v-col>
         <v-col
           v-for="msg in history"
           :key="msg.id"

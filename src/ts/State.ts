@@ -122,7 +122,7 @@ export default class State {
     return newDoc
   }
 
-  getChat(): Message[] {
+  getChat(): { messages: Message[]; truncated: boolean } {
     const messages: Message[] = []
 
     const keys = Object.keys(this.chat.messages).sort()
@@ -133,7 +133,7 @@ export default class State {
       messages.push({ id: parseInt(key), user, msg })
     }
 
-    return messages
+    return { messages, truncated: this.chat.truncated }
   }
 
   addMessage(msg: string) {
