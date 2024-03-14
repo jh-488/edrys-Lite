@@ -89,7 +89,7 @@ export default {
           </v-tab>
           <v-tab>
             <v-icon left> mdi-view-dashboard </v-icon>
-            Components
+            Modules
           </v-tab>
           <v-tab>
             <v-icon left> mdi-router-wireless </v-icon>

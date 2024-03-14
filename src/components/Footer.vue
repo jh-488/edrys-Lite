@@ -43,7 +43,7 @@ export default {
           <v-btn
             density="plain"
             icon="mdi-share-circle"
-            href="https://github.com/topics/edrys-lab"
+            href="https://github.com/topics/edrys-classroom"
             target="_"
             class="mx-2"
             v-bind="props"

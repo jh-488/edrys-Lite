@@ -11,7 +11,7 @@
       <v-expansion-panel-text>
         <v-text-field
           variant="underlined"
-          label="Component URL"
+          label="Module URL"
           v-model="module.url"
         ></v-text-field>
       </v-expansion-panel-text>
