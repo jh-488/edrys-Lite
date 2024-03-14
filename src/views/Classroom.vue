@@ -67,6 +67,7 @@ export default {
       isStation: this.station,
 
       peerID,
+      userName: getShortPeerID(peerID),
       stationName,
 
       componentKey: 0,
@@ -181,7 +182,7 @@ export default {
         }
       });
 
-      self.liveClassProxy = this.communication.join();
+      self.liveClassProxy = this.communication.join(this.getRole());
 
       this.communication.on("connected", (state: boolean) => {
         self.states.connectedToNetwork = state;
@@ -226,10 +227,7 @@ export default {
       for (const id in this.liveClassProxy.users) {
         if (this.liveClassProxy.users[id].room === name) {
           const displayName = this.liveClassProxy.users[id].displayName;
-          users.push([
-            getShortPeerID(displayName),
-            this.peerID === id ? "black" : "grey",
-          ]);
+          users.push([displayName, this.peerID === id ? "black" : "grey"]);
         }
       }
 

@@ -313,10 +313,10 @@ export default class Peer {
     this.state.addMessage(message)
   }
 
-  join() {
+  join(role: 'student' | 'teacher' | 'station') {
     this.timestamp.join = Date.now()
 
-    this.state.init('student', this.data.meta.defaultNumberOfRooms)
+    this.state.init(role, this.data.meta.defaultNumberOfRooms)
 
     const self = this
     this.state.on('update', (config: { room?: boolean; chat?: boolean }) => {

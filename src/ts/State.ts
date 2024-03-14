@@ -76,7 +76,7 @@ export default class State {
   }
 
   initUser() {
-    this.userSettings.displayName = this.userID
+    this.userSettings.displayName = getShortPeerID(this.userID)
     this.userSettings.room = this.isStation ? this.userID : LOBBY
 
     this.userSettings.dateJoined = Date.now()
