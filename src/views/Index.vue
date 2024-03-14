@@ -81,7 +81,7 @@ export default {
         },
         modules: [
           {
-            url: "https://edrys-labs.github.io/component-reference/",
+            url: "https://edrys-labs.github.io/module-reference/",
             config: "",
             studentConfig: "",
             teacherConfig: "",
