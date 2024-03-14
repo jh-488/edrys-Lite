@@ -71,7 +71,7 @@
 
       <v-text-field
         v-model="moduleImportUrl"
-        label="Module URL"
+        label="Component URL"
         variant="underlined"
         required
         style="width: calc(100% - 40px)"
@@ -87,7 +87,7 @@
   </v-list>
 
   <v-divider class="pb-2"></v-divider>
-  <v-btn href="https://github.com/topics/edrys-lite" target="_blank">
+  <v-btn href="https://github.com/topics/edrys-component" target="_blank">
     <v-icon left> mdi-github </v-icon>
     Explore on GitHub
   </v-btn>
