@@ -1,8 +1,9 @@
 <script lang="ts">
 import Settings from "../components/Settings.vue";
-import Chat from "../components/Chat";
-import Checks from "../components/Checks";
+import Chat from "../components/Chat.vue";
+import Checks from "../components/Checks.vue";
 import Modules from "../components/Modules.vue";
+import Menu from "../components/Menu.vue";
 
 import { Database, DatabaseItem } from "../ts/Database";
 import { infoHash, scrapeModule, clone, getPeerID, getShortPeerID } from "../ts/Utils";
@@ -261,6 +262,7 @@ export default {
     Checks,
     Settings,
     Modules,
+    Menu,
   },
 };
 </script>
@@ -273,14 +275,13 @@ export default {
       <v-app-bar color="surface-variant">
         <template v-slot:prepend>
           <v-app-bar-nav-icon @click="showSideMenu = !showSideMenu"></v-app-bar-nav-icon>
-          <!-- remove underline from link -->
 
           <v-app-bar-title
             tag="a"
             style="color: white; text-decoration: none"
-            title="Back to index-page"
+            title="Back to Homepage"
           >
-            <a href="./" style="color: white; text-decoration: none">edrys-lite</a>
+            <a href="./" style="color: white; text-decoration: none; display: flex; align-items: center; gap: 5px;"><v-icon icon="mdi-home"></v-icon>edrys-lite</a>
           </v-app-bar-title>
         </template>
 
@@ -299,34 +300,14 @@ export default {
           <v-icon icon="mdi-forum" v-else></v-icon>
         </v-btn>
 
-        <v-menu>
-          <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" icon="mdi-dots-vertical"> </v-btn>
-          </template>
-
-          <v-list>
-            <v-list-item>
-              <v-list-item-title> User ID: </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ getPeerID() }}
-                <v-btn
-                  icon="mdi-content-copy"
-                  size="small"
-                  variant="flat"
-                  @click="copyPeerID()"
-                >
-                </v-btn>
-              </v-list-item-subtitle>
-            </v-list-item>
-
-            <v-list-item>
+        <Menu :peerID="peerID">
+          <v-list-item>
               <v-list-item-title> User Role: </v-list-item-title>
               <v-list-item-subtitle>
                 {{ getRole() }}
               </v-list-item-subtitle>
             </v-list-item>
-          </v-list>
-        </v-menu>
+        </Menu>
       </v-app-bar>
 
       <v-navigation-drawer temporary v-model="showSideMenu">

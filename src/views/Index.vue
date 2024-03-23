@@ -1,232 +1,117 @@
-<script lang="ts">
-import DateFormat from "date-format-simple";
-import { Database, DatabaseItem } from "../ts/Database";
-import {
-  infoHash,
-  getPeerID,
-  clone,
-  removeKeysStartingWithSecret,
-  copyToClipboard,
-} from "../ts/Utils";
+<script>
+    export default {
+        name: "Index",
+        
+        data() {
+            return {
+                username: "",
+                password: "",
+                usernameRules: [
+                    (v) => !!v || "Username is required",
+                    (v) => (v && v.length <= 20) || "Username must be less than 20 characters",
+                ],
+                passwordRules: [
+                    (v) => !!v || "Password is required",
+                    (v) => (v && v.length >= 8) || "Password must be at least 8 characters",
+                ],
+                hasAccount: false,
+            };
+        },
 
-import Footer from "../components/Footer.vue";
-
-export default {
-  name: "Index",
-
-  components: { Footer },
-
-  data() {
-    const database = new Database();
-    const classrooms: DatabaseItem[] = [];
-
-    database.setObservable("*", (rooms: any) => {
-      this.classrooms = rooms;
-    });
-
-    return {
-      database,
-      classrooms,
-      peerID: getPeerID(false),
+        methods: {
+            toggleSignIn() {
+                this.hasAccount = !this.hasAccount;
+            },
+        },
     };
-  },
-
-  methods: {
-    copyPeerID() {
-      copyToClipboard(this.peerID);
-    },
-
-    deleteClass(id: string) {
-      this.database.drop(id);
-    },
-
-    forkClass(classroom: any) {
-      classroom = clone(classroom);
-
-      const id = infoHash();
-      const peerID = getPeerID(false);
-
-      if (classroom.data.createdBy !== peerID) {
-        removeKeysStartingWithSecret(classroom);
-
-        classroom.data.members.teacher = [];
-        classroom.data.members.student = [];
-      }
-
-      classroom.data.createdBy = peerID;
-      classroom.id = id;
-
-      this.database.put({ id, data: classroom.data, timestamp: Date.now() });
-
-      window.location.search = `?/classroom/${id}`;
-    },
-
-    async createClass() {
-      const id = infoHash();
-
-      const data = {
-        id,
-        createdBy: getPeerID(false),
-        dateCreated: new Date().getTime(),
-        name: "My New Class",
-        meta: {
-          logo: "",
-          description: "",
-          selfAssign: false,
-          defaultNumberOfRooms: 0,
-        },
-        members: {
-          teacher: [],
-          student: [],
-        },
-        modules: [
-          {
-            url: "https://edrys-labs.github.io/module-reference/",
-            config: "",
-            studentConfig: "",
-            teacherConfig: "",
-            stationConfig: "",
-            width: "full",
-            height: "tall",
-          },
-        ],
-      };
-
-      this.database.put({ id, data, timestamp: Date.now() });
-
-      window.location.search = `?/classroom/${id}`;
-    },
-  },
-};
 </script>
 
 <template>
-  <v-app>
-    <v-app-bar color="surface-variant" title="edrys-lite">
-      <template v-slot:append>
-        <v-menu>
-          <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" icon="mdi-dots-vertical"> </v-btn>
-          </template>
-
-          <v-list>
-            <v-list-item>
-              <v-list-item-title> User ID: </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ peerID }}
-                <v-btn
-                  icon="mdi-content-copy"
-                  size="small"
-                  variant="flat"
-                  @click="copyPeerID()"
+    <v-app>
+        <v-app-bar color="surface-variant">
+            <template v-slot:prepend>
+                <v-app-bar-title
+                    style="color: white;"
                 >
-                </v-btn>
-              </v-list-item-subtitle>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </template>
-    </v-app-bar>
+                    edrys-lite
+                </v-app-bar-title>
+            </template>
+        </v-app-bar>
 
-    <v-main class="d-flex">
-      <v-container fluid class="align-start">
-        <v-row>
-          <v-col
-            cols="12"
-            sm="6"
-            md="4"
-            lg="3"
-            v-for="classroom in classrooms"
-            :key="classroom.id"
-          >
-            <v-card class="item" color="surface-variant" elevation="4">
-              <v-img
-                :src="
-                  classroom?.data?.meta?.logo ||
-                  'https://repository-images.githubusercontent.com/453979926/ab6bf9d7-a4bc-4a47-97b7-c8bc8bb4654d'
-                "
-                height="200px"
-                cover
-              ></v-img>
-              <v-card-title>{{ classroom.data?.name }}</v-card-title>
-              <v-card-subtitle>
-                <span v-if="classroom?.data.createdBy === peerID"
-                  >You own this class</span
-                >
-                <span v-else-if="classroom?.data.members.teacher.includes(peerID)"
-                  >You're a teacher here</span
-                >
-                <span v-else>You're a student here</span>
-              </v-card-subtitle>
+        <v-main class="d-flex flex-column align-center justify-center" style="gap: 50px;">
+            <div class="text-h1 font-weight-light">Welcome to Edrys</div>
+            <v-sheet v-if="!hasAccount" class="form pa-10" width="400" elevation="5">
+                <v-form fast-fail @submit.prevent>
+                <v-text-field
+                    v-model="username"
+                    :rules="usernameRules"
+                    label="Username"
+                    variant="outlined"
+                ></v-text-field>
 
-              <v-card-text>
-                <span
-                  v-html="classroom?.data?.meta?.description || 'No description'"
-                ></span>
-              </v-card-text>
+                <v-text-field
+                    v-model="password"
+                    :rules="passwordRules"
+                    label="Password"
+                    variant="outlined"
+                ></v-text-field>
 
-              <v-card-actions>
-                <v-btn icon title="fork" @click="forkClass(classroom)">
-                  <v-icon>mdi-source-fork</v-icon>
-                </v-btn>
-                <v-menu>
-                  <template v-slot:activator="{ props }">
-                    <v-btn color="" v-bind="props" icon="mdi-delete"> </v-btn>
-                  </template>
+                <v-btn color="surface-variant" class="mt-2" type="submit" block>Register</v-btn>
+                </v-form>
+                <div class="d-flex align-center justify-center mt-5">
+                    <p>Already have an account? <span id="sign-in-link" @click="toggleSignIn">Sign In</span></p>
+                </div>
+            </v-sheet>
 
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-title> Are you sure? </v-list-item-title>
+            <v-sheet v-if="hasAccount" class="form pa-10" width="400" elevation="5">
+                <v-form fast-fail @submit.prevent>
+                <v-text-field
+                    v-model="username"
+                    :rules="usernameRules"
+                    label="Username"
+                    variant="outlined"
+                ></v-text-field>
 
-                      <v-btn
-                        color="red"
-                        depressed
-                        @click="deleteClass(classroom.id)"
-                        class="float-right"
-                        style="margin-top: 10px"
-                      >
-                        Yes, delete forever</v-btn
-                      >
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+                <v-text-field
+                    v-model="password"
+                    :rules="passwordRules"
+                    label="Password"
+                    variant="outlined"
+                ></v-text-field>
 
-                <v-spacer></v-spacer>
-                <a
-                  data-link="true"
-                  :href="`./?/classroom/${classroom.id}`"
-                  style="color: white"
-                >
-                  <v-btn icon title="open">
-                    <v-icon>mdi-arrow-right-bold</v-icon>
-                  </v-btn>
-                </a>
-              </v-card-actions>
-            </v-card>
-          </v-col>
-
-          <v-col cols="12" sm="6" md="4" lg="3">
-            <v-card
-              class="item"
-              color="surface-variant"
-              elevation="4"
-              @click="createClass()"
-              variant="elevated"
-            >
-              <v-card-title>Create a class</v-card-title>
-              <v-card-subtitle>Start teaching now</v-card-subtitle>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn icon>
-                  <v-icon icon="mdi-plus"></v-icon>
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
-
-    <Footer></Footer>
-  </v-app>
+                <v-btn color="surface-variant" class="mt-2" type="submit" block>Sign In</v-btn>
+                </v-form>
+                <div class="d-flex align-center justify-center mt-5">
+                    <p>Back to <span id="sign-in-link" @click="toggleSignIn">Register</span></p>
+                </div>
+            </v-sheet>
+        </v-main>
+    </v-app>
 </template>
+
+
+<style>
+    @keyframes fadeInOut {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .form {
+        animation: fadeInOut .5s ease-in-out;
+    }
+
+    #sign-in-link {
+        color: #496989; 
+        font-weight: 600;
+        text-decoration: underline; 
+        cursor: pointer;
+    }
+
+    #sign-in-link:hover {
+        opacity: .8;
+    }
+</style>

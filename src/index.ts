@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 import Index from './views/Index.vue'
+import Home from './views/Home.vue'
 import Classroom from './views/Classroom.vue'
+import Profile from './views/Profile.vue'
 
 // Vuetify
 import 'vuetify/dist/vuetify.min.css'
@@ -9,6 +11,7 @@ import { aliases, mdi } from '../node_modules/vuetify/lib/iconsets/mdi.mjs'
 import * as components from '../node_modules/vuetify/lib/components'
 import * as directives from '../node_modules/vuetify/lib/directives'
 import './assets/scss/main.scss'
+
 
 var app
 
@@ -58,8 +61,10 @@ export const navigateTo = (url: string, replace?: boolean) => {
 const router = async () => {
   const routes = [
     { path: '/', view: Index },
+    { path: '/home', view: Home},
     { path: '/classroom/:id', view: Classroom, params: { station: false } },
     { path: '/station/:id', view: Classroom, params: { station: true } },
+    { path: '/profile/:id', view: Profile },
   ]
 
   const potentialMatches = routes.map((route) => {
