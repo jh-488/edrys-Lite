@@ -110,7 +110,7 @@ export default {
             style="color: white; text-decoration: none;"
             title="Back to Homepage"
           >
-            <a href="./" style="color: white; text-decoration: none; display: flex; align-items: center; gap: 5px;"><v-icon icon="mdi-home"></v-icon>edrys-lite</a>
+            <a href="./?/home" style="color: white; text-decoration: none; display: flex; align-items: center; gap: 5px;"><v-icon icon="mdi-home"></v-icon>edrys-lite</a>
         </v-app-bar-title>
       </template>
       <Menu :peerID="peerID"></Menu>
