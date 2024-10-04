@@ -40,8 +40,7 @@ jobs:
           # Copy new built files to the website repo
           cp -r ./dist/* edrys-labs.github.io//docs
           
-          # Remove all contents from the website repo (to prevent old files)
-          cd edrys-labs.github.io/docs
+          cd edrys-labs.github.io
           
           # Add, commit and push changes to the GitHub Pages repo
           git add .
