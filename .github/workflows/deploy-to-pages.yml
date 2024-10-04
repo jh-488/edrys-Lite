@@ -29,8 +29,8 @@ jobs:
       - name: Deploy to GitHub Pages repository
         run: |
           # Configure Git
-          # git config --global user.name "github-actions[bot]"
-          # git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "jh-488"
+          git config --global user.email "jihadhyadi01@gmail.com"
           
           # Clone the GitHub Pages repository
           git clone https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/jh-488/edrys-labs.github.io.git
