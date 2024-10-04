@@ -38,7 +38,7 @@ jobs:
 
 
           # Copy new built files to the website repo
-          cp -r ./dist/* edrys-labs.github.io//docs
+          cp -r ./dist/* edrys-labs.github.io/docs
           
           cd edrys-labs.github.io
           
