@@ -24,8 +24,6 @@ jobs:
       - name: Build the app
         run: npm run build  
       
-      - name: Verify dist folder exists 1
-        run: ls 
 
       # Deploy to the website repository
       - name: Deploy to GitHub Pages repository
@@ -37,10 +35,8 @@ jobs:
           # Clone the GitHub Pages repository
           git clone https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/jh-488/edrys-labs.github.io.git
 
-          ls 
-
           # Copy new built files to the website repo
-          cp -r ../dist/* ./docs
+          cp -r /dist/* ./docs
           
           # Remove all contents from the website repo (to prevent old files)
           cd edrys-labs.github.io/docs
