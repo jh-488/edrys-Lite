@@ -33,7 +33,7 @@ jobs:
           git config --global user.email "jihadhyadi01@gmail.com"
           
           # Clone the GitHub Pages repository
-          git clone https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/jh-488/edrys-labs.github.io.git
+          git clone https://x-access-token:${{ secrets.MY_PAT }}@github.com/jh-488/edrys-labs.github.io.git
 
 
           # Copy new built files to the website repo
